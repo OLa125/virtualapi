@@ -7,3 +7,6 @@ pillow
 omegaconf
 accelerate
 safetensors
+tqdm
+numpy
+scipy
