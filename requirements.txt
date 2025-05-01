@@ -1,13 +1,13 @@
 flask
 torch
-diffusers==0.19.3
+git+https://github.com/huggingface/diffusers.git@refs/pull/5074/head
 transformers
 opencv-python
 pillow
 omegaconf
-accelerate==0.21.0
+accelerate==0.25.0
 safetensors
 tqdm
 numpy
 scipy
-huggingface_hub==0.19.4
+huggingface_hub==0.21.4
