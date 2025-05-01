@@ -5,7 +5,7 @@ transformers
 opencv-python
 pillow
 omegaconf
-accelerate
+accelerate==0.21.0
 safetensors
 tqdm
 numpy
