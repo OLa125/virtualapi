@@ -10,3 +10,4 @@ safetensors
 tqdm
 numpy
 scipy
+huggingface_hub==0.16.4  ← أضف هذا السطر أو غيّره لو موجود
