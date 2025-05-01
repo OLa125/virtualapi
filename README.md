@@ -1,109 +1,61 @@
-# PromptDresser: Improving the Quality and Controllability of Virtual Try-On via Generative Textual Prompt and Prompt-aware Mask
-This repository is the official implementation of [PromptDresser](https://arxiv.org/abs/2412.16978)
+# PromptDresser Flask API
 
-> **PromptDresser: Improving the Quality and Controllability of Virtual Try-On via Generative Textual Prompt and Prompt-aware Mask**<br>
-> [Jeongho Kim](https://scholar.google.co.kr/citations?user=4SCCBFwAAAAJ&hl=ko), [Hoiyeong Jin](https://scholar.google.com/citations?user=Jp-zhtUAAAAJ&hl=en), [Sunghyun Park](https://psh01087.github.io/), [Jaegul Choo](https://sites.google.com/site/jaegulchoo/)
+This project provides an API interface for the PromptDresser virtual try-on model using Flask.
 
-[[arXiv Paper](https://arxiv.org/abs/2412.16978)]&nbsp;
+## 🔧 Installation
 
-![teaser](assets/teaser.png)&nbsp;
-
-## TODO List
-- [v] ~~Inference code~~
-- [v] ~~Release model weights~~
-- [] Training code
-
-## Environments
+1. Clone the repository or unzip the project folder.
+2. Install dependencies:
 ```bash
-git clone https://github.com/rlawjdghek/PromptDresser
-cd PromptDresser
-
-conda create --name PromptDresser python=3.10 -y
-conda activate PromptDresser
-
-# install packages
-pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
-python -m pip install diffusers==0.25.0
-python -m pip install accelerate==0.31.0
-python -m pip install transformers>=4.25.1
-python -m pip install ftfy
-python -m pip install Jinja2
-python -m pip install datasets
-python -m pip install wandb
-python -m pip install onnxruntime-gpu==1.19.2
-python -m pip install omegaconf
-python -m pip install einops
-python -m pip install torchmetrics
-python -m pip install clean-fid
-python -m pip install scikit-image
-
-python -m pip install opencv-python
-python -m pip install fvcore
-python -m pip install cloudpickle
-python -m pip install pycocotools
-python -m pip install av
-python -m pip install scipy
-python -m pip install peft
-
-python -m pip install huggingface-hub==0.24.6
+pip install -r requirements.txt
 ```
+3. Download the pretrained models and place them under `pretrained_models/` directory, or update paths in `inference_api.py`.
 
-## Weights and Data
-First, download the [sdxl](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) and [sdxl inpainting](https://huggingface.co/diffusers/stable-diffusion-xl-1.0-inpainting-0.1) models into the pretrained_models folder using Git LFS. <br>
-[Human parsing model](https://kaistackr-my.sharepoint.com/:u:/g/personal/rlawjdghek_kaist_ac_kr/Ee3dZA1XHdRItvC4vo7FkNYBS5UnAo121InZa6F6FFpbfQ?e=bGoRsU) and our [checkpoint](https://kaistackr-my.sharepoint.com/:f:/g/personal/rlawjdghek_kaist_ac_kr/EgSQrdvWmgNElCo62CId3_4BA4UwFLRhmNnzWUGb04ZClQ?e=lSh06b) on VITONHD should be placed in the checkpoints folder. <br>
+## 🚀 Running the API
 
-You can download the VITON-HD dataset from [here](https://github.com/shadow2496/VITON-HD), and download text file and two agnostic mask for prompt-aware mask generation from [here](https://kaistackr-my.sharepoint.com/:f:/g/personal/rlawjdghek_kaist_ac_kr/EroBlORglNBPuAzf21-A9csBW-qoPr-kgG414aHJE7gwgQ?e=CoQTEc). <br>
-For the inference, the following dataset structure is required:
-
-```
-test_coarse
-|-- image
-|-- image-densepose
-|-- agnostic-mask
-|-- cloth
-...
-
-test_fine
-|-- image
-|-- image-densepose
-|-- agnostic-mask
-|-- cloth
-...
-
-test_pairs.txt
-test_unpairs.txt
-test_gpt4o.json
-```
-
-## Inference
 ```bash
-#### single gpu
-CUDA_VISIBLE_DEVICES=0 python inference.py \
- --config_p "./configs/VITONHD.yaml" \
- --pretrained_unet_path "./checkpoints/VITONHD/model/pytorch_model.bin" \
- --save_name VITONHD
-
-#### multi-gpu
-CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --mixed_precision fp16 --num_processes 4 --multi_gpu inference.py \
- --config_p "./configs/VITONHD.yaml" \
- --pretrained_unet_path "./checkpoints/VITONHD/model/pytorch_model.bin" \
- --save_name VITONHD
+python app.py
 ```
+This will start the server at `http://0.0.0.0:7860`
 
+## 🧪 API Endpoint
 
-## Citation
-If you find our work useful for your research, please cite us:
-```
-@misc{kim2024promptdresserimprovingqualitycontrollability,
-      title={PromptDresser: Improving the Quality and Controllability of Virtual Try-On via Generative Textual Prompt and Prompt-aware Mask}, 
-      author={Jeongho Kim and Hoiyeong Jin and Sunghyun Park and Jaegul Choo},
-      year={2024},
-      eprint={2412.16978},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2412.16978}, 
+### POST `/generate`
+Generate a virtual try-on image based on a human and cloth image, along with an optional prompt.
+
+#### Request (JSON):
+```json
+{
+  "prompt": "a photo of a woman in a red dress",
+  "cloth_image": "<base64_encoded_png>",
+  "human_image": "<base64_encoded_png>"
 }
 ```
 
-## License
-Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
+#### Response (JSON):
+```json
+{
+  "result": "<base64_encoded_output_image>"
+}
+```
+
+## 📁 Directory Structure
+```
+project_root/
+├── app.py
+├── inference_api.py
+├── requirements.txt
+├── README.md
+├── configs/
+│   └── VITONHD.yaml
+├── pretrained_models/
+│   └── [downloaded models here]
+└── promptdresser/
+    └── [core project code]
+```
+
+## 📦 Model Sources
+You can upload models to Hugging Face Hub or provide a direct link to download them if they are too large to include directly.
+
+---
+Developed for deployment of PromptDresser-based virtual try-on using minimal API interface.
