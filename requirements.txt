@@ -1,6 +1,6 @@
 flask
 torch
-diffusers
+git+https://github.com/huggingface/diffusers.git@main
 transformers
 opencv-python
 pillow
